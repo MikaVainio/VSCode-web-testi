@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Oy Yritys Ab</title>
+</head>
+<!-- Määritellään funktio, joka osaa hakea sisältöä toisesta html-tiedostosta -->
+<script>
+function lisaaHTML() {
+  var z, i, elmnt, file, xhttp;
+  /*Käydään dokumentin elementit yksitellen läpi */
+  z = document.getElementsByTagName("*");
+  for (i = 0; i < z.length; i++) {
+    elmnt = z[i];
+    /*tutkitaan onko attribuuttina tuotu-html */
+    file = elmnt.getAttribute("tuotu-html");
+    if (file) {
+      /*tehdään sen perusteella http-pyyntö vastaavaan tiedostoon */
+      xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4) {
+          if (this.status == 200) {elmnt.innerHTML = this.responseText;}
+          if (this.status == 404) {elmnt.innerHTML = "Page not found.";}
+          /*poistetaan attribuutti ja kutsutaan funtiota uudelleen:*/
+          elmnt.removeAttribute("tuotu-html");
+          lisaaHTML();
+        }
+      }      
+      xhttp.open("GET", file, true);
+      xhttp.send();
+      /* poistutaan funktiosta*/
+      return;
+    }
+  }
+};
+</script>
+<body>
+    <!-- Valikko tuotuna toisesta tiedostosta -->
+   <div tuotu-html="valikko.html"></div>
+<!-- Kutsutaan lisaaHTML-funktiota dokumentin näkyvässä osassa -->
+<script>
+lisaaHTML();
+</script>
+</body>
+
+</html>
